@@ -3,7 +3,7 @@ import pandas as pd
 
 def preprocess(data):
 
-    pattern = r'(\d{1,2}/\d{1,2}/\d{2,4},\s\d{1,2}:\d{2}\s?(?:AM|PM|am|pm))\s-\s'
+    pattern = r'(\d{1,2}/\d{1,2}/\d{4},\s\d{1,2}:\d{2})\s-\s'
 
     parts = re.split(pattern, data)
 
@@ -16,13 +16,14 @@ def preprocess(data):
     df = pd.DataFrame({"date": dates, "user_message": messages})
 
     df["date"] = df["date"].astype(str).str.replace("\u202f", " ", regex=False)
-    df["date"] = pd.to_datetime(df["date"], errors="coerce", dayfirst=True)
+    df["date"] = pd.to_datetime(df["date"], format="%d/%m/%Y, %H:%M", errors="coerce")
 
     users = []
     msgs = []
 
     for message in df["user_message"]:
         entry = re.split(r"([\w\W]+?):\s", message, maxsplit=1)
+
         if len(entry) > 2:
             users.append(entry[1].strip())
             msgs.append(entry[2])
