@@ -15,7 +15,7 @@ def preprocess(data):
     })
 
     # Clean hidden unicode space
-    df['date'] = df['date'].str.replace('\u202f', ' ', regex=False)
+    df['date'] = df['date'].fillna("").astype(str).str.replace('\u202f', ' ', regex=False)
     df['date'] = df['date'].str.replace(' - ', '', regex=False)
 
     # Correct datetime parsing (12-hour clock)
