@@ -69,10 +69,11 @@ def create_wordcloud(selected_user, df):
 
     return df_wc
 
-def most_common_words(selected_user,df):
+def most_common_words(selected_user, df):
 
-    f = open('stop_hinglish.txt','r')
-    stop_words = f.read()
+    # open stop words file
+    f = open('stop_hinglish.txt', 'r', encoding='utf-8')
+    stop_words = f.read().splitlines()
 
     if selected_user != 'Overall':
         df = df[df['user'] == selected_user]
@@ -87,7 +88,9 @@ def most_common_words(selected_user,df):
             if word not in stop_words:
                 words.append(word)
 
-    most_common_df = pd.DataFrame(most_common_words, columns=["word", "count"])
+    common_words_list = Counter(words).most_common(20)
+
+    most_common_df = pd.DataFrame(common_words_list, columns=["word", "count"])
     return most_common_df
 
 def emoji_helper(selected_user,df):
