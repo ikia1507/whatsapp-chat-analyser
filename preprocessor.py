@@ -7,9 +7,8 @@ def preprocess(data):
 
     parts = re.split(pattern, data)
 
-    # parts format: ["", date1, msg1, date2, msg2, ...]
     if len(parts) < 3:
-        return pd.DataFrame()   # return empty df if pattern not matched
+        return pd.DataFrame()
 
     dates = parts[1::2]
     messages = parts[2::2]
