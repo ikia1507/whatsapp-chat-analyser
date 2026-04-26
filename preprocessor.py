@@ -3,27 +3,21 @@ import pandas as pd
 
 def preprocess(data):
 
-    # Regex matching YOUR WhatsApp format
-    pattern = r'\d{1,2}/\d{1,2}/\d{4},\s\d{1,2}:\d{2}[\u202f\s]?(?:am|pm)\s-\s'
+    pattern = r'(\d{1,2}/\d{1,2}/\d{4},\s\d{1,2}:\d{2}[\u202f\s]?(?:AM|PM|am|pm))\s-\s'
 
     messages = re.split(pattern, data)[1:]
-    dates = re.findall(pattern, data)
+    
+    dates = messages[0::2]      # even index
+    msgs = messages[1::2]       # odd index
 
     df = pd.DataFrame({
-        'user_message': messages,
+        'user_message': msgs,
         'date': dates
     })
 
-    # Clean hidden unicode space
     df['date'] = df['date'].fillna("").astype(str).str.replace('\u202f', ' ', regex=False)
-    df['date'] = df['date'].str.replace(' - ', '', regex=False)
 
-    # Correct datetime parsing (12-hour clock)
-    df['date'] = pd.to_datetime(
-        df['date'],
-        format='%d/%m/%Y, %I:%M %p',
-        errors='coerce'
-    )
+    df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y, %I:%M %p', errors='coerce')
 
     users = []
     messages = []
@@ -31,7 +25,7 @@ def preprocess(data):
     for message in df['user_message']:
         entry = re.split(r'([\w\W]+?):\s', message)
         if entry[1:]:
-            users.append(entry[1])
+            users.append(entry[1].strip())
             messages.append(entry[2])
         else:
             users.append('group_notification')
@@ -41,7 +35,9 @@ def preprocess(data):
     df['message'] = messages
     df.drop(columns=['user_message'], inplace=True)
 
-    # Date features
+    # remove rows where date parsing failed
+    df = df.dropna(subset=['date'])
+
     df['only_date'] = df['date'].dt.date
     df['year'] = df['date'].dt.year
     df['month_num'] = df['date'].dt.month
@@ -51,7 +47,6 @@ def preprocess(data):
     df['hour'] = df['date'].dt.hour
     df['minute'] = df['date'].dt.minute
 
-    # Time period column
     period = []
     for hour in df['hour']:
         if hour == 23:
