@@ -3,7 +3,8 @@ import pandas as pd
 
 def preprocess(data):
 
-    pattern = r'(\d{1,2}/\d{1,2}/\d{4},\s\d{1,2}:\d{2}[\u202f\s]?(?:AM|PM|am|pm))\s-\s'
+  pattern = r'(\d{1,2}/\d{1,2}/\d{2,4},\s\d{1,2}:\d{2}[\u202f\s]?(?:AM|PM|am|pm))\s-\s'
+  df['date'] = pd.to_datetime(df['date'], errors='coerce', dayfirst=True)
 
     messages = re.split(pattern, data)[1:]
     
