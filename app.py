@@ -127,8 +127,9 @@ if uploaded_file is not None:
         most_common_df = helper.most_common_words(selected_user, df)
 
         # FIX for KeyError: 'word'
-        if 0 in most_common_df.columns:
-            most_common_df.columns = ['word', 'count']
+     
+        if 'word' not in most_common_df.columns:
+           most_common_df.columns = ['word', 'count']
 
         fig, ax = plt.subplots()
         ax.barh(most_common_df['word'], most_common_df['count'])
@@ -147,7 +148,8 @@ if uploaded_file is not None:
             st.dataframe(emoji_df)
         with col2:
             fig,ax = plt.subplots()
-            ax.pie(emoji_df[1].head(),labels=emoji_df[0].head(),autopct="%0.2f")
+            emoji_df.columns = ["emoji", "count"]
+            ax.pie(emoji_df["count"].head(), labels=emoji_df["emoji"].head(), autopct="%0.2f")
             st.pyplot(fig)
 
 
