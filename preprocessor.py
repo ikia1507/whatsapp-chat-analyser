@@ -15,8 +15,10 @@ def preprocess(data):
 
     df = pd.DataFrame({"date": dates, "user_message": messages})
 
+    # replace special space
     df["date"] = df["date"].astype(str).str.replace("\u202f", " ", regex=False)
-    df["date"] = pd.to_datetime(df["date"], format="%d/%m/%Y, %H:%M", errors="coerce")
+
+    df["date"] = pd.to_datetime(df["date"], format="%d/%m/%Y, %I:%M %p", errors="coerce")
 
     users = []
     msgs = []
