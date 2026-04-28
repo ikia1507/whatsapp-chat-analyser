@@ -35,26 +35,28 @@ def most_busy_users(df):
     return x, df
 
 
-if selected_user != 'Overall':
-    temp = df[df['user'] == selected_user]
-else:
-    temp = df
+def create_wordcloud(selected_user, df):
 
-# remove group notifications
-temp = temp[temp['user'] != 'group_notification']
+    if selected_user != 'Overall':
+        temp = df[df['user'] == selected_user]
+    else:
+        temp = df
 
-# remove media omitted + deleted messages
-temp = temp[~temp['message'].str.contains("Media omitted", na=False)]
-temp = temp[~temp['message'].str.contains("You deleted this message", na=False)]
+    # remove group notifications
+    temp = temp[temp['user'] != 'group_notification']
 
-text = temp['message'].dropna().astype(str).str.cat(sep=" ")
+    # remove media omitted + deleted messages
+    temp = temp[~temp['message'].str.contains("Media omitted", na=False)]
+    temp = temp[~temp['message'].str.contains("You deleted this message", na=False)]
 
-if text.strip() == "":
-    return None
+    # join all messages into one string
+    text = temp['message'].dropna().astype(str).str.cat(sep=" ")
 
-wc = WordCloud(width=500, height=500, min_font_size=10, background_color='white')
-return wc.generate(text)
+    if text.strip() == "":
+        return None
 
+    wc = WordCloud(width=500, height=500, min_font_size=10, background_color='white')
+    return wc.generate(text)
 
 def most_common_words(selected_user, df):
 
